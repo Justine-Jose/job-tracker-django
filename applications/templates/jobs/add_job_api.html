@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+    <body>
+        <h2>Add Job</h2>
+        <form id="jobForm">
+            <div class="form-group mb-2">
+                <label for="company_name">Company Name</label>
+                <input type="text" class="form-control" id="company_name" name="company_name">
+            </div>
+            <div class="form-group mb-2">
+                <label for="position">position</label>
+                <input type="text" class="form-control" id="position" name="position">
+            </div>
+            <div class="form-group mb-2">
+                <label for="status">status</label>
+                <select class="form-control" id="status" name="status">
+                    <option value="Applied">Applied</option>
+                    <option value="Interviewing">Interviewing</option>
+                    <option value="Offered">Offered</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="form-group mb-2">
+                <label for="applied_date">Applied Date</label>
+                <input type="date" class="form-control" id="applied_date" name="applied_date">
+            </div>
+            <div class="form-group mb-2">
+                <label for="note">Note</label>
+                <textarea class="form-control" id="note" name="note"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <p id="result"></p>
+    </body>
+</html>
+<script>
+    document.getElementById("jobForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        const data = {
+            company_name: formData.get("company_name"),
+            position: formData.get("position"),
+            status: formData.get("status"),
+            applied_date: formData.get("applied_date"),
+            note: formData.get("note")
+        };
+        fetch("/api/jobs/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        // .then(res => res.json())
+        // .then(data => {
+        //     document.getElementById("result").innerText = "Job added with ID: " + data.id;
+        // })
+        // .catch(error => {
+        //     document.getElementById("result").innerText = "Error: " + error;
+        // });
+        .then(res =>{
+            if (res.ok) {
+                window.location.href = "/api/jobs/list/";
+            }
+        });
+    });
+</script>
+{% endblock %}

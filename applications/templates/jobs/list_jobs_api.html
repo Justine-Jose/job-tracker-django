@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+table, th, td {
+  border:1px solid black;
+}
+</style>
+<div class="alert alert-success" role="alert" id = 'alertid' style="display:none;">
+  Successful
+</div>
+<table border="1" id="jobTable" class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Company</th>
+      <th>Position</th>
+      <th>Status</th>
+      <th>Date</th>
+      <th>Note</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody id="jobBody"></tbody>
+</table>
+<div id = 'editjoibs' style="display:none;">
+    <h3>Edit Job</h3>
+    <form id="editForm">
+        <input type="hidden" id="editId">
+        <!-- Company: <input type="text" id="editCompany"><br> -->
+        <div class="form-group mb-2">
+            <label for="company_name">Company Name</label>
+            <input type="text" class="form-control" id="editCompany" name="editCompany">
+        </div>
+        <!-- Position: <input type="text" id="editPosition"><br> -->
+        <div class="form-group mb-2">
+            <label for="editPosition">Position</label>
+            <input type="text" class="form-control" id="editPosition" name="editPosition">
+        </div>
+        <div class="form-group mb-2">
+            <label for="status">status</label>
+            <select class="form-control" id="editStatus" name="editStatus">
+                <option value="Applied">Applied</option>
+                <option value="Interviewing">Interviewing</option>
+                <option value="Offered">Offered</option>
+                <option value="Rejected">Rejected</option>
+            </select>
+        </div>
+        <div class="form-group mb-2">
+            <label for="editDate">Applied Date</label>
+            <input type="date" class="form-control" id="editDate" name="editDate">
+        </div>
+        <div class="form-group mb-2">
+            <label for="note">Note</label>
+            <textarea class="form-control" id="editNote" name="editNote"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Job</button>
+    </form>
+</div>
+<p id="status"></p>
+<script>
+function loadJobs() {
+  fetch("/api/jobs/")
+    .then(res => res.json())
+    .then(data => {
+      const tbody = document.getElementById("jobBody");
+      tbody.innerHTML = "";
+      data.forEach(job => {
+        const row = `
+          <tr>
+            <td>${job.id}</td>
+            <td>${job.company_name}</td>
+            <td>${job.position}</td>
+            <td>${job.status}</td>
+            <td>${job.applied_date}</td>
+            <td>${job.note}</td>
+            <td>
+              <button onclick="editJob(${job.id})" class="btn btn-primary">Edit</button>
+              <button onclick="deleteJob(${job.id})" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    });
+}
+
+function deleteJob(id) {
+  fetch(`/api/jobs/${id}/`, {
+    method: "DELETE"
+  })
+  .then(res => {
+    if (res.status === 204) {
+      document.getElementById("alertid").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("alertid").style.display = "none";
+        }, 3000); // hides after 3 seconds
+      loadJobs();
+    } else {
+      alert("Delete failed");
+    }
+  });
+}
+
+function editJob(id) {
+  fetch(`/api/jobs/${id}/`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Error fetching job ${id}: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(job => {
+      document.getElementById("editId").value = job.id;
+      document.getElementById("editCompany").value = job.company_name;
+      document.getElementById("editPosition").value = job.position;
+      document.getElementById("editStatus").value = job.status;
+      document.getElementById("editDate").value = job.applied_date;
+      document.getElementById("editNote").value = job.note;
+      document.getElementById("editjoibs").style.display = "block";
+    })
+    .catch(err => alert(err));
+}
+
+
+document.getElementById("editForm").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const id = document.getElementById("editId").value;
+  const data = {
+    company_name: document.getElementById("editCompany").value,
+    position: document.getElementById("editPosition").value,
+    status: document.getElementById("editStatus").value,
+    applied_date: document.getElementById("editDate").value,
+    note: document.getElementById("editNote").value
+  };
+  fetch(`/api/jobs/${id}/`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  })
+  .then(res => {
+    if (res.ok) {
+    //   alert("Updated!");
+      document.getElementById("editjoibs").style.display = "none";
+      document.getElementById("alertid").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("alertid").style.display = "none";
+        }, 3000); // hides after 3 seconds
+      loadJobs();
+    } else {
+      alert("Update failed");
+    }
+  });
+});
+
+window.onload = loadJobs;
+</script>
+{% endblock %}

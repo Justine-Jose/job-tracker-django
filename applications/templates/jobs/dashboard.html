@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row content">
+    <div class="col-sm-9">
+      <h1><i class="bi bi-clipboard-data"></i> Job Tracker Dashboard</h1>
+
+<p>Total Jobs: <span id="totalJobs">0</span></p>
+
+<ul id="statusCounts">
+  <li>Applied: <span id="appliedCount">0</span></li>
+  <li>Interview: <span id="interviewCount">0</span></li>
+  <li>Offered: <span id="offeredCount">0</span></li>
+  <li>Rejected: <span id="rejectedCount">0</span></li>
+</ul>
+
+<a href="/jobs/add/"><i class="bi bi-plus"></i></a> Add Job |
+<a href="/jobs/list/"> <i class="bi bi-file-text"></i></a>View All Jobs
+ </div>
+  </div>
+</div>
+
+<script>
+fetch("/api/jobs/")
+  .then(res => res.json())
+  .then(jobs => {
+    document.getElementById("totalJobs").innerText = jobs.length;
+
+    let counts = { Applied: 0, Interview: 0, Offered: 0, Rejected: 0 };
+    jobs.forEach(job => {
+      if (counts[job.status] !== undefined) {
+        counts[job.status]++;
+      }
+    });
+
+    document.getElementById("appliedCount").innerText = counts.Applied;
+    document.getElementById("interviewCount").innerText = counts.Interview;
+    document.getElementById("offeredCount").innerText = counts.Offered;
+    document.getElementById("rejectedCount").innerText = counts.Rejected;
+  });
+</script>
+
+   
+{% endblock %}
