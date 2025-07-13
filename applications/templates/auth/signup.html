@@ -6,7 +6,7 @@
     <form method="post">
       {% csrf_token %}
       {% for field in form %}
-        <div class="form-group mb-2">
+        <div class="mb-3">
           <label class="form-label">{{ field.label }}</label>
           {{ field }}
           {% if field.errors %}
@@ -14,7 +14,7 @@
           {% endif %}
         </div>
       {% endfor %}
-      <button type="submit" class="btn btn-primary">Create Account</button>
+      <button type="submit" class="btn btn-primary">Sign Up</button>
     </form>
   </div>
 </div>

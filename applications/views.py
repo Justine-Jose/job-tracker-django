@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-
+from .forms import SignUpForm
 class JobApplicationListCreate(APIView):
     def get(self,request):
         jobs = JobApplications.objects.filter(user = request.user)
@@ -69,10 +69,10 @@ def dashboard(request):
 
 def signup_view(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('login')
     else:
-        form = UserCreationForm()
+        form = SignUpForm()
     return render(request,'auth/signup.html',{'form': form})
