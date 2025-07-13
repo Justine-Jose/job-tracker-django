@@ -25,6 +25,7 @@ table, th, td {
 <div id = 'editjoibs' style="display:none;">
     <h3>Edit Job</h3>
     <form id="editForm">
+      <meta name="csrf-token" content="{{ csrf_token }}">
         <input type="hidden" id="editId">
         <!-- Company: <input type="text" id="editCompany"><br> -->
         <div class="form-group mb-2">
@@ -58,6 +59,7 @@ table, th, td {
 </div>
 <p id="status"></p>
 <script>
+ const csrftoken = "{{ csrf_token }}";
 function loadJobs() {
   fetch("/api/jobs/")
     .then(res => res.json())
@@ -86,7 +88,10 @@ function loadJobs() {
 
 function deleteJob(id) {
   fetch(`/api/jobs/${id}/`, {
-    method: "DELETE"
+    method: "DELETE",
+    headers: {
+      "X-CSRFToken": csrftoken 
+    }
   })
   .then(res => {
     if (res.status === 204) {
@@ -134,7 +139,9 @@ document.getElementById("editForm").addEventListener("submit", function(e) {
   };
   fetch(`/api/jobs/${id}/`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken  
+     },
     body: JSON.stringify(data)
   })
   .then(res => {

@@ -26,7 +26,7 @@ fetch("/api/jobs/")
   .then(jobs => {
     document.getElementById("totalJobs").innerText = jobs.length;
 
-    let counts = { Applied: 0, Interview: 0, Offered: 0, Rejected: 0 };
+    let counts = { Applied: 0, Interviewing: 0, Offered: 0, Rejected: 0 };
     jobs.forEach(job => {
       if (counts[job.status] !== undefined) {
         counts[job.status]++;
@@ -34,7 +34,7 @@ fetch("/api/jobs/")
     });
 
     document.getElementById("appliedCount").innerText = counts.Applied;
-    document.getElementById("interviewCount").innerText = counts.Interview;
+    document.getElementById("interviewCount").innerText = counts.Interviewing;
     document.getElementById("offeredCount").innerText = counts.Offered;
     document.getElementById("rejectedCount").innerText = counts.Rejected;
   });

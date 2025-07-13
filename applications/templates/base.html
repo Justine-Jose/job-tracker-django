@@ -26,21 +26,35 @@
                 {% with request.resolver_match.url_name as url_name %}
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="{% if url_name == 'list-job-page' %}nav-link active {% else %} nav-link {% endif %}" aria-current="page" href="{% url 'list-job-page' %}">Your Detials</a>
+                        <a class="{% if url_name == 'list-job-page' %}nav-link active {% else %} nav-link {% endif %}" href="{% url 'list-job-page' %}">Your Details</a>
                     </li>
                     <li class="nav-item">
                         <a class="{% if url_name == 'add-job-page' %}nav-link active {% else %} nav-link {% endif %}" href="{% url 'add-job-page' %}">Add New Entry</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#">Create Blog</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">My Account</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="">Registered Users</a>
-                    </li> -->
+
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link disabled">{{ user.username }}</a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-link nav-link" style="display:inline; padding: 0; color: #fff;">
+                                <i class="bi bi-box-arrow-right"></i> Logout
+                                </button>
+                            </form>
+                        </li>
+
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                        </li>
+                    {% endif %}
                 </ul>
+
                 {% endwith %}
             </div>
         </div>

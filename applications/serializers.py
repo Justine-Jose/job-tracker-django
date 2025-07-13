@@ -5,3 +5,4 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobApplications
         fields = '__all__'
+        read_only_fields = ['user']
